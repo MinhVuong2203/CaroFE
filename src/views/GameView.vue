@@ -21,6 +21,10 @@ const roomStore = useRoomStore()
           :name="roomStore.room.player1?.name"
           status="online"
           :isHost="roomStore.room.hostConnectionId === roomStore.room.player1?.connectionId"
+          :isTurn="
+            roomStore.room.isPlaying &&
+            roomStore.room.currentTurn === roomStore.room.player1?.symbol
+          "
         />
 
         <RoomInfo />
@@ -30,6 +34,10 @@ const roomStore = useRoomStore()
           :name="roomStore.room.player2?.name"
           status="waiting"
           :isHost="roomStore.room.hostConnectionId === roomStore.room.player2?.connectionId"
+          :isTurn="
+            roomStore.room.isPlaying &&
+            roomStore.room.currentTurn === roomStore.room.player2?.symbol
+          "
         />
       </aside>
 

@@ -95,6 +95,34 @@ input {
   animation: fade 0.35s;
 }
 
+
+/* Thông báo SweetAlert */
+.swal-popup {
+  background: var(--modal-bg) !important;
+  color: var(--modal-text) !important;
+  border: 1px solid var(--modal-border);
+  border-radius: 20px;
+  box-shadow: var(--modal-shadow);
+}
+
+.swal-title {
+  color: var(--modal-text) !important;
+}
+
+.swal-html {
+  color: var(--text-secondary) !important;
+}
+
+.swal-confirm {
+  background: var(--primary) !important;
+  border-radius: 10px !important;
+  font-weight: 600;
+}
+
+.swal-confirm:hover {
+  background: var(--primary-hover) !important;
+}
+
 @keyframes fade {
   from {
     opacity: 0;

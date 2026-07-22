@@ -1,9 +1,13 @@
 <script setup>
 import { connection } from '@/services/signalr'
+import { useNotificationStore } from '@/stores/notificationStore'
 import { useRoomStore } from '@/stores/roomStore'
+import { getSignalRError } from '@/utils/signalr'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const notification = useNotificationStore()
 
 const roomStore = useRoomStore()
 // const playerCount = 1
@@ -29,6 +33,37 @@ const leaveRoom = async () => {
     }
   }
 }
+
+const toggleGame = async () => {
+  try {
+    if (roomStore.room.winningCells.length > 0) {
+      await connection.invoke('RestartGame', roomStore.room.roomCode)
+    } else if (roomStore.room.isPlaying) {
+      await connection.invoke('StopGame', roomStore.room.roomCode)
+    } else {
+      await connection.invoke('StartGame', roomStore.room.roomCode)
+    }
+  } catch (err) {
+    notification.error(getSignalRError(err), 3000)
+  }
+}
+
+const buttonText = computed(() => {
+  if (roomStore.room.winningCells.length > 0) return 'Đánh lại'
+  return roomStore.room.isPlaying ? 'Dừng lại' : 'Bắt đầu'
+})
+
+const buttonIcon = computed(() => {
+  if (roomStore.room.winningCells.length > 0) return 'fa-solid fa-rotate-right'
+
+  return roomStore.room.isPlaying ? 'fa-solid fa-stop' : 'fa-solid fa-play'
+})
+
+const buttonClass = computed(() => {
+  if (roomStore.room.winningCells.length > 0) return 'warning'
+
+  return roomStore.room.isPlaying ? 'danger' : 'success'
+})
 </script>
 
 <template>
@@ -47,7 +82,24 @@ const leaveRoom = async () => {
       <span class="player-count"> 👥 {{ roomStore.getQuantityPlayer }}/2 </span>
     </div>
 
-    <button class="header-btn">⚙️</button>
+    <div class="header-actions">
+      <button
+        class="header-btn"
+        :class="buttonClass"
+        :disabled="roomStore.room.hostConnectionId !== connection.connectionId"
+        :title="
+          roomStore.room.hostConnectionId !== connection.connectionId
+            ? 'Chỉ chủ phòng mới có thể chạm vào'
+            : ''
+        "
+        @click="toggleGame"
+      >
+        <i :class="buttonIcon"></i>
+        {{ buttonText }}
+      </button>
+
+      <button class="header-btn">⚙️</button>
+    </div>
   </header>
 </template>
 
@@ -122,7 +174,19 @@ const leaveRoom = async () => {
   color: var(--text-secondary);
 }
 
+.header-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
 .header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-width: 110px;
 
   height: 42px;
@@ -154,5 +218,33 @@ const leaveRoom = async () => {
 
 .header-btn.danger:hover {
   background: #dc2626;
+}
+
+.header-btn.success {
+  background: #22c55e;
+  color: white;
+}
+
+.header-btn.success:hover {
+  background: #16a34a;
+}
+
+.header-btn.warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.header-btn.warning:hover {
+  background: #d97706;
+}
+
+.header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.header-btn:disabled:hover {
+  transform: none;
 }
 </style>
