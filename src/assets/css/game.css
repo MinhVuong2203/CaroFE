@@ -1,0 +1,124 @@
+.game-page {
+  min-height: 100vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  background: var(--background);
+
+  color: var(--text);
+}
+
+/* ==========================
+   Main Layout
+========================== */
+
+.game-container {
+  flex: 1;
+
+  display: grid;
+
+  grid-template-columns: 280px 1fr 340px;
+
+  gap: 20px;
+
+  padding: 20px;
+
+  overflow: hidden;
+}
+
+/* ==========================
+   Left
+========================== */
+
+.left-panel {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+/* ==========================
+   Center
+========================== */
+
+.center-panel {
+  width: 100%;
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-start;
+
+  overflow: auto;
+}
+
+/* ==========================
+   Right
+========================== */
+
+.right-panel {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+/* Chat chiếm toàn bộ chiều cao còn lại */
+
+.right-panel > :first-child {
+  flex: 1;
+}
+
+/* ==========================
+   Scrollbar
+========================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ==========================
+   Responsive
+========================== */
+
+@media (max-width: 1200px) {
+  .game-container {
+    grid-template-columns: 240px 1fr 300px;
+  }
+}
+
+@media (max-width: 992px) {
+  .game-container {
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+  }
+
+  .left-panel {
+    order: 1;
+  }
+
+  .center-panel {
+    order: 2;
+  }
+
+  .right-panel {
+    order: 3;
+  }
+}

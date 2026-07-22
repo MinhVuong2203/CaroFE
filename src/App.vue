@@ -1,85 +1,47 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
+import LoadingOverlay from './components/common/LoadingOverlay.vue'
+import { connection } from './services/signalr.js'
+import AppNotification from './components/common/AppNotification.vue'
+import { useRoomStore } from './stores/roomStore.js'
+import router from './router/index.js'
+
+const roomStore = useRoomStore()
+
+connection
+  .start()
+  .then(async () => {
+    // Đến đây là phục vụ kết nối SignalR thành công
+    console.log('Connected')
+
+    // Đây phục vụ cho việc F5, khi F5 thì sẽ mất dữ liệu trong store, nên cần lấy dữ liệu từ localStorage để set lại vào store
+    const session = localStorage.getItem('caro-session')
+    if (!session) return
+    const { roomCode, playerName } = JSON.parse(session)
+    console.log('Session data:', { roomCode, playerName })
+    try {
+      const response = await connection.invoke('Reconnect', { roomCode, playerName })
+      console.log('Reconnect response:', response)
+      roomStore.setRoom(response) // set dữ liệu phòng vào store roomStore
+      router.push('/game')
+    } catch (err) {
+      console.error('Error parsing session data:', err)
+      localStorage.removeItem('caro-session') // Xóa session nếu có lỗi
+    }
+  })
+  .catch((err) => {
+    console.error('SignalR connection error:')
+  })
+
+// Lắng nghe sự kiện RoomUpdated từ server và cập nhật dữ liệu phòng trong store (realtime), phải mở ở đây,
+// RoomUpdated khớp với tên sự kiện được gửi từ server-side SignalR, roomStore.setRoom(room) sẽ cập nhật dữ liệu phòng trong store
+connection.on('RoomUpdated', (room) => {
+  roomStore.setRoom(room)
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
+  <LoadingOverlay />
+  <AppNotification />
   <RouterView />
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>

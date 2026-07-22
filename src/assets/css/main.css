@@ -1,0 +1,110 @@
+@import './variables.css';
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Nunito', sans-serif;
+}
+
+body {
+  background: var(--bg);
+
+  color: var(--text);
+
+  transition: 0.3s;
+}
+
+a {
+  text-decoration: none;
+
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+
+  border: none;
+
+  transition: 0.25s;
+}
+
+input {
+  outline: none;
+
+  border: 1px solid var(--border);
+
+  background: var(--input-bg);
+
+  color: var(--text);
+
+  border-radius: 10px;
+}
+
+.container {
+  width: min(1200px, 92%);
+
+  margin: auto;
+}
+
+.card {
+  background: var(--surface);
+
+  border-radius: 16px;
+
+  box-shadow: var(--shadow);
+}
+
+.primary-btn {
+  background: var(--primary);
+
+  color: white;
+
+  padding: 12px 28px;
+
+  border-radius: 12px;
+
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: var(--primary-hover);
+}
+
+.secondary-btn {
+  background: transparent;
+
+  border: 1px solid var(--border);
+
+  color: var(--text);
+
+  padding: 12px 28px;
+
+  border-radius: 12px;
+}
+
+.secondary-btn:hover {
+  background: var(--surface-hover);
+}
+
+.fade {
+  animation: fade 0.35s;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: none;
+  }
+}

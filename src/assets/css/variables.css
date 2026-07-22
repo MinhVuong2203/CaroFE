@@ -1,0 +1,57 @@
+:root {
+  /* ===== Primary ===== */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+
+  /* ===== Success ===== */
+  --success: #22c55e;
+
+  /* ===== Danger ===== */
+  --danger: #ef4444;
+
+  /* ===== Border ===== */
+  --border: #4747478a;
+
+  /* ===== Radius ===== */
+  --radius: 14px;
+
+  /* ===== Shadow ===== */
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+  /* ===== Transition ===== */
+  --transition: 0.25s ease;
+
+  /* ===== Light Theme ===== */
+
+  --bg: #f4f7fb;
+
+  --surface: #ffffff;
+
+  --surface-hover: #f8fafc;
+
+  --text: #1f2937;
+
+  --text-secondary: #6b7280;
+
+  --input-bg: white;
+}
+
+/* =============================== */
+/* DARK MODE */
+/* =============================== */
+
+.dark {
+  --bg: #0f172a;
+
+  --surface: #1e293b;
+
+  --surface-hover: #334155;
+
+  --text: #f8fafc;
+
+  --text-secondary: #94a3b8;
+
+  --border: #475569;
+
+  --input-bg: #0f172a;
+}
