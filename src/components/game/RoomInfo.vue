@@ -1,5 +1,6 @@
 <script setup>
 import { useRoomStore } from '@/stores/roomStore'
+import AppButton from '../common/AppButton.vue'
 
 const roomStore = useRoomStore() // hàm này được gọi để lấy dữ liệu từ store roomStore trong roomStore.js đã export ra
 
@@ -26,7 +27,9 @@ const copyRoomCode = async () => {
         {{ roomStore.room.roomCode }}
       </span>
 
-      <button class="copy-btn" @click="copyRoomCode">📋</button>
+      <AppButton class="copy-btn" @click="copyRoomCode" title="Sao chép mã phòng">
+        <i class="fa-regular fa-copy"></i>
+      </AppButton>
     </div>
 
     <div class="info-list">
@@ -45,64 +48,48 @@ const copyRoomCode = async () => {
 
 <style scoped>
 .room-card {
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
+  background: linear-gradient(
+    160deg,
+    var(--surface) 0%,
+    color-mix(in srgb, var(--surface) 88%, #1e293b) 100%
+  );
+  border: 1.5px solid var(--border);
   border-radius: 18px;
-
   padding: 20px;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 18px;
+  box-shadow: var(--shadow);
 }
 
 .card-title {
   text-align: center;
-
   font-size: 18px;
-
   font-weight: 700;
 }
 
 .room-code-box {
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   gap: 12px;
 }
 
 .room-code {
   font-size: 28px;
-
   font-weight: 800;
-
   letter-spacing: 4px;
-
   color: var(--primary);
 }
 
 .copy-btn {
   border: none;
-
   background: var(--primary);
-
   color: white;
-
   width: 36px;
-
   height: 36px;
-
   border-radius: 10px;
-
   cursor: pointer;
-
   transition: 0.2s;
 }
 
@@ -112,27 +99,77 @@ const copyRoomCode = async () => {
 
 .info-list {
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
 }
 
 .info-item {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
   padding: 10px 12px;
-
   background: var(--surface-hover);
-
   border-radius: 10px;
 }
 
 .info-item span {
   color: var(--text-secondary);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablet: two-column info list instead of stacked room card */
+@media (max-width: 1024px) {
+  .room-card {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .info-list {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .info-item {
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+}
+
+/* Mobile: tighter card, smaller room code */
+@media (max-width: 560px) {
+  .room-card {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .card-title {
+    font-size: 15px;
+  }
+
+  .room-code {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .copy-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .info-item {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .info-item strong {
+    font-size: 13px;
+  }
 }
 </style>

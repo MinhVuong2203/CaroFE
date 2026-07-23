@@ -1,4 +1,5 @@
 <script setup>
+import { playPlaceSound } from '@/services/audio'
 import { connection } from '@/services/signalr'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useRoomStore } from '@/stores/roomStore'
@@ -20,9 +21,14 @@ const placePiece = async (row, col) => {
       row,
       col,
     })
+    playPlaceSound()
   } catch (err) {
     notification.error(getSignalRError(err), 3000)
   }
+}
+
+const isLastMove = (row, col) => {
+  return roomStore.room.lastMove?.row === row && roomStore.room.lastMove?.col === col
 }
 </script>
 
@@ -31,7 +37,10 @@ const placePiece = async (row, col) => {
     <div class="board-header">
       <div class="board-title">
         <i class="fa-solid fa-chess-board board-icon"></i>
-        <h2>Bàn cờ</h2>
+        <h2>
+          Cuộc chiến giữa <span class="piece-x">{{ roomStore.room.player1?.name }}</span> và
+          <span class="piece-o">{{ roomStore.room.player2?.name }}</span>
+        </h2>
       </div>
       <div class="board-meta">
         <i class="fa-solid fa-table-cells board-size-icon"></i>
@@ -61,9 +70,18 @@ const placePiece = async (row, col) => {
           @click="placePiece(rowIndex, colIndex)"
         >
           <!-- X piece -->
-          <i v-if="cell === 'X'" class="fa-solid fa-xmark piece-icon piece-x"></i>
+          <i
+            v-if="cell === 'X'"
+            class="fa-solid fa-x piece-icon piece-x"
+            :class="{ 'fa-jello ': isLastMove(rowIndex, colIndex) }"
+          ></i>
+
           <!-- O piece -->
-          <i v-else-if="cell === 'O'" class="fa-regular fa-circle piece-icon piece-o"></i>
+          <i
+            v-else-if="cell === 'O'"
+            class="fa-solid fa-o piece-icon piece-o"
+            :class="{ 'fa-jello': isLastMove(rowIndex, colIndex) }"
+          ></i>
         </div>
       </template>
     </div>
@@ -202,7 +220,6 @@ const placePiece = async (row, col) => {
 .piece-icon {
   font-size: clamp(12px, 3.5vw, 26px);
   line-height: 1;
-  animation: pop-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .piece-x {
@@ -214,6 +231,13 @@ const placePiece = async (row, col) => {
 .piece-o {
   color: #ec4899;
   filter: drop-shadow(0 0 4px rgba(236, 72, 153, 0.5));
+}
+
+.last-piece {
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 @keyframes pop-in {
@@ -268,6 +292,41 @@ const placePiece = async (row, col) => {
   }
   .board-title h2 {
     font-size: 17px;
+  }
+}
+
+@media (max-width: 560px) {
+  .board-wrapper {
+    padding: 10px;
+    border-radius: 18px;
+    gap: 12px;
+  }
+
+  .board-title h2 {
+    font-size: 15px;
+  }
+
+  .board-icon {
+    font-size: 15px;
+  }
+
+  .board-meta {
+    padding: 4px 9px;
+  }
+
+  .board-size {
+    font-size: 11px;
+  }
+
+  .board-grid {
+    gap: 1.5px;
+    padding: 1.5px;
+    border-radius: 10px;
+  }
+
+  .board-cell,
+  .board-cell.winner {
+    border-radius: 3px;
   }
 }
 </style>

@@ -7,6 +7,7 @@ import { connection } from '@/services/signalr'
 import { useRoomStore } from '@/stores/roomStore'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { getSignalRError } from '@/utils/signalr'
+import AppButton from '@/components/common/AppButton.vue'
 
 const router = useRouter()
 
@@ -166,9 +167,9 @@ const backHome = () => {
 
           <input v-model="playerName" maxlength="50" placeholder="Nhập tên hiển thị" />
         </div>
-        <button class="primary-btn" @click="createRoom">🎮 Tạo phòng</button>
+        <AppButton class="primary-btn" @click="createRoom">🎮 Tạo phòng</AppButton>
 
-        <button class="secondary-btn" @click="showJoinForm">🚪 Tham gia phòng</button>
+        <AppButton class="secondary-btn" @click="showJoinForm">🚪 Tham gia phòng</AppButton>
       </div>
 
       <!-- Chọn join -->
@@ -179,8 +180,8 @@ const backHome = () => {
         </div>
 
         <div class="button-group">
-          <button class="secondary-btn" @click="backHome">← Quay lại</button>
-          <button class="primary-btn" @click="joinRoom">🚪 Tham gia</button>
+          <AppButton class="secondary-btn" @click="backHome">← Quay lại</AppButton>
+          <AppButton class="primary-btn" @click="joinRoom">🚪 Tham gia</AppButton>
         </div>
       </div>
 
@@ -206,9 +207,11 @@ const backHome = () => {
       </div>
 
       <div class="actions">
-        <button class="secondary-btn" @click="showCreateModal = false">Huỷ</button>
+        <AppButton class="secondary-btn" @click="showCreateModal = false">Huỷ</AppButton>
 
-        <button class="primary-btn" @click="confirmCreateRoom(selectedSize)">🎮 Tạo phòng</button>
+        <AppButton class="primary-btn" @click="confirmCreateRoom(selectedSize)"
+          >🎮 Tạo phòng</AppButton
+        >
       </div>
     </div>
   </div>

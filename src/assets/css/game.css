@@ -1,124 +1,101 @@
+/* =========================================================
+   GAME LAYOUT — responsive grid (mobile / tablet / laptop)
+   ========================================================= */
+
 .game-page {
   min-height: 100vh;
-
   display: flex;
-
   flex-direction: column;
-
-  background: var(--background);
-
-  color: var(--text);
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      color-mix(in srgb, var(--primary) 10%, transparent) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 90%,
+      color-mix(in srgb, var(--primary) 8%, transparent) 0%,
+      transparent 45%
+    ),
+    var(--bg);
 }
-
-/* ==========================
-   Main Layout
-========================== */
 
 .game-container {
   flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
 
   display: grid;
-
-  grid-template-columns: 280px 1fr 340px;
-
+  grid-template-columns: 300px 1fr;
+  grid-template-areas:
+    'p1    board'
+    'info  board'
+    'p2    board';
+  align-items: start;
   gap: 20px;
-
-  padding: 20px;
-
-  overflow: hidden;
 }
 
-/* ==========================
-   Left
-========================== */
+.area-p1 {
+  grid-area: p1;
+}
+.area-info {
+  grid-area: info;
+}
+.area-p2 {
+  grid-area: p2;
+}
+.area-board {
+  grid-area: board;
+}
 
 .left-panel {
   display: flex;
-
   flex-direction: column;
-
   gap: 20px;
 }
 
-/* ==========================
-   Center
-========================== */
-
 .center-panel {
-  width: 100%;
-  display: flex;
-
-  justify-content: center;
-
-  align-items: flex-start;
-
-  overflow: auto;
+  min-width: 0; /* prevents grid blowout on narrow boards */
 }
-
-/* ==========================
-   Right
-========================== */
 
 .right-panel {
   display: flex;
-
   flex-direction: column;
-
   gap: 20px;
+  height: 100%;
 }
 
-/* Chat chiếm toàn bộ chiều cao còn lại */
-
-.right-panel > :first-child {
-  flex: 1;
-}
-
-/* ==========================
-   Scrollbar
-========================== */
-
-::-webkit-scrollbar {
-  width: 8px;
-
-  height: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
-}
-
-/* ==========================
-   Responsive
-========================== */
-
-@media (max-width: 1200px) {
+/* ── Tablet (≤1024px): players side by side, room info full-width, board below ── */
+@media (max-width: 1024px) {
   .game-container {
-    grid-template-columns: 240px 1fr 300px;
-  }
-}
-
-@media (max-width: 992px) {
-  .game-container {
-    grid-template-columns: 1fr;
-
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'p1    p2'
+      'info  info'
+      'board board';
     gap: 16px;
+    padding: 20px;
   }
+}
 
-  .left-panel {
-    order: 1;
+/* ── Small tablet / large phone (≤768px) ── */
+@media (max-width: 768px) {
+  .game-container {
+    gap: 12px;
+    padding: 14px;
   }
+}
 
-  .center-panel {
-    order: 2;
-  }
-
-  .right-panel {
-    order: 3;
+/* ── Mobile (≤560px): tighter spacing, board gets priority over room info ── */
+@media (max-width: 560px) {
+  .game-container {
+    grid-template-areas:
+      'p1    p2'
+      'board board'
+      'info  info';
+    gap: 10px;
+    padding: 10px;
   }
 }

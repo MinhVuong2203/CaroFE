@@ -5,6 +5,8 @@ import { useRoomStore } from '@/stores/roomStore'
 import { getSignalRError } from '@/utils/signalr'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import AppButton from '../common/AppButton.vue'
+import ThemeToggle from '../common/ThemeToggle.vue'
 
 const router = useRouter()
 const notification = useNotificationStore()
@@ -15,9 +17,9 @@ const roomStore = useRoomStore()
 const copyRoomCode = async () => {
   try {
     await navigator.clipboard.writeText(roomStore.room.roomCode)
-    alert('Đã sao chép mã phòng.')
+    notification.success('Đã sao chép mã phòng.', 3000)
   } catch {
-    alert('Không thể sao chép.')
+    notification.error('Không thể sao chép mã phòng.', 3000)
   }
 }
 
@@ -68,22 +70,27 @@ const buttonClass = computed(() => {
 
 <template>
   <header class="game-header">
-    <button class="header-btn danger" @click="leaveRoom">← Thoát</button>
-
+    <AppButton class="header-btn danger" @click="leaveRoom">
+      <span class="btn-full">← Thoát</span>
+      <span class="btn-compact"><i class="fa-solid fa-arrow-left"></i></span>
+    </AppButton>
+    <i class="fa-solid fa-x fa-jello"></i>
     <div class="room-section">
       <span class="room-title"> Phòng </span>
 
       <div class="room-code">
         {{ roomStore.room.roomCode }}
 
-        <button class="copy-btn" @click="copyRoomCode" title="Sao chép mã phòng">📋</button>
+        <AppButton class="copy-btn" @click="copyRoomCode" title="Sao chép mã phòng">
+          <i class="fa-regular fa-copy fa-float"></i>
+        </AppButton>
       </div>
 
       <span class="player-count"> 👥 {{ roomStore.getQuantityPlayer }}/2 </span>
     </div>
 
     <div class="header-actions">
-      <button
+      <AppButton
         class="header-btn"
         :class="buttonClass"
         :disabled="roomStore.room.hostConnectionId !== connection.connectionId"
@@ -95,10 +102,11 @@ const buttonClass = computed(() => {
         @click="toggleGame"
       >
         <i :class="buttonIcon"></i>
-        {{ buttonText }}
-      </button>
+        <span class="btn-full">{{ buttonText }}</span>
+      </AppButton>
 
-      <button class="header-btn">⚙️</button>
+      <ThemeToggle />
+      <AppButton class="theme-toggle"><i class="fa-solid fa-wrench"></i></AppButton>
     </div>
   </header>
 </template>
@@ -106,62 +114,45 @@ const buttonClass = computed(() => {
 <style scoped>
 .game-header {
   height: 72px;
-
   padding: 0 24px;
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
+  gap: 12px;
   background: var(--surface);
-
   border-bottom: 1px solid var(--border);
-
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .room-section {
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   gap: 4px;
+  min-width: 0;
 }
 
 .room-title {
   font-size: 13px;
-
   color: var(--text-secondary);
 }
 
 .room-code {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   font-size: 24px;
-
   font-weight: 700;
-
   letter-spacing: 3px;
 }
 
 .copy-btn {
   background: none;
-
   border: none;
-
   cursor: pointer;
-
   font-size: 18px;
-
   transition: 0.2s;
+  color: var(--text);
 }
 
 .copy-btn:hover {
@@ -170,15 +161,12 @@ const buttonClass = computed(() => {
 
 .player-count {
   font-size: 13px;
-
   color: var(--text-secondary);
 }
 
 .header-actions {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
 }
 
@@ -188,22 +176,15 @@ const buttonClass = computed(() => {
   justify-content: center;
   gap: 8px;
   min-width: 110px;
-
   height: 42px;
-
   border: none;
-
   border-radius: 10px;
-
   background: var(--surface-hover);
-
   color: var(--text);
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition: 0.25s;
+  white-space: nowrap;
 }
 
 .header-btn:hover {
@@ -212,7 +193,6 @@ const buttonClass = computed(() => {
 
 .header-btn.danger {
   background: #ef4444;
-
   color: white;
 }
 
@@ -246,5 +226,100 @@ const buttonClass = computed(() => {
 
 .header-btn:disabled:hover {
   transform: none;
+}
+
+.btn-compact {
+  display: none;
+}
+
+.theme-toggle {
+  width: 42px;
+
+  height: 42px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  font-size: 20px;
+
+  background: var(--surface-hover);
+
+  color: var(--text);
+
+  transition: 0.25s;
+}
+
+.theme-toggle:hover {
+  transform: rotate(20deg) scale(1.08);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .game-header {
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  .room-code {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .header-btn {
+    min-width: 90px;
+    height: 38px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile: icon-only buttons, compact room code */
+@media (max-width: 560px) {
+  .game-header {
+    height: 56px;
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .room-title,
+  .player-count {
+    display: none;
+  }
+
+  .room-code {
+    font-size: 16px;
+    letter-spacing: 1px;
+    gap: 6px;
+  }
+
+  .copy-btn {
+    font-size: 14px;
+  }
+
+  .header-btn {
+    min-width: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .btn-full {
+    display: none;
+  }
+
+  .btn-compact {
+    display: inline-flex;
+  }
+
+  .header-btn.icon-only {
+    font-size: 16px;
+  }
 }
 </style>

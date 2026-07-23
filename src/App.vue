@@ -6,6 +6,7 @@ import AppNotification from './components/common/AppNotification.vue'
 import { useRoomStore } from './stores/roomStore.js'
 import router from './router/index.js'
 import Swal from 'sweetalert2'
+import { playWinSound } from './services/audio.js'
 
 const roomStore = useRoomStore()
 
@@ -43,7 +44,6 @@ connection.on('RoomUpdated', (room) => {
   if (wasPlaying && !room.isPlaying && room.winningCells.length > 0) {
     setTimeout(() => {
       const winner = room.currentTurn === 'X' ? room.player1?.name : room.player2?.name
-
       Swal.fire({
         icon: undefined,
         title: 'Kết thúc ván đấu!',
@@ -63,6 +63,7 @@ connection.on('RoomUpdated', (room) => {
           confirmButton: 'swal-confirm',
         },
       })
+      playWinSound()
     }, 1000)
   }
 })

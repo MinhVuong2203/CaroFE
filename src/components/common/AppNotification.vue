@@ -17,14 +17,19 @@ const notificationStore = useNotificationStore()
 
         <i v-else-if="notification.type === 'error'" class="fa-solid fa-bug fa-beat"></i>
 
-        <i v-else-if="notification.type === 'warning'" class="fa-solid fa-triangle-exclamation fa-jello"></i>
+        <i
+          v-else-if="notification.type === 'warning'"
+          class="fa-solid fa-triangle-exclamation fa-jello"
+        ></i>
 
         <i v-else class="fa-solid fa-circle-info fa-jello"></i>
       </span>
 
-      <span>{{ notification.message }}</span>
+      <span class="message">{{ notification.message }}</span>
 
-      <button class="close-btn" @click="notificationStore.hide(notification.id)"><i class="fa-solid fa-x fa-jello"></i></button>
+      <button class="close-btn" @click="notificationStore.hide(notification.id)">
+        <i class="fa-solid fa-x fa-jello"></i>
+      </button>
     </div>
   </TransitionGroup>
 </template>
@@ -32,38 +37,27 @@ const notificationStore = useNotificationStore()
 <style scoped>
 .notification-container {
   position: fixed;
-
   top: 24px;
-
   right: 24px;
-
+  left: auto;
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
-
   z-index: 9999;
-}
-.notification {
-  min-width: 340px;
-
   max-width: 420px;
+  width: min(420px, calc(100vw - 48px));
+}
 
+.notification {
+  width: 100%;
+  min-width: 0;
   padding: 14px 18px;
-
   border-radius: var(--radius);
-
   display: flex;
-
   align-items: center;
-
   gap: 14px;
-
   box-shadow: var(--shadow);
-
   z-index: 9999;
-
   border: 2px solid;
 }
 
@@ -105,27 +99,26 @@ const notificationStore = useNotificationStore()
 
 .icon {
   font-size: 22px;
-
+  flex-shrink: 0;
   display: flex;
-
   align-items: center;
-
   justify-content: center;
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .close-btn {
   margin-left: auto;
-
+  flex-shrink: 0;
   background: transparent;
-
   color: inherit;
-
   font-size: 18px;
-
   padding: 4px;
-
   border-radius: 50%;
-
   transition: var(--transition);
 }
 
@@ -141,7 +134,52 @@ const notificationStore = useNotificationStore()
 .toast-enter-from,
 .toast-leave-to {
   opacity: 0;
-
   transform: translateX(40px);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablet: slightly tighter margins */
+@media (max-width: 768px) {
+  .notification-container {
+    top: 16px;
+    right: 16px;
+    width: min(380px, calc(100vw - 32px));
+  }
+}
+
+/* Mobile: full-width toast anchored to top, centered horizontally */
+@media (max-width: 560px) {
+  .notification-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+  }
+
+  .notification {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+
+  .close-btn {
+    font-size: 15px;
+  }
+
+  /* Slide up/down instead of sideways so it doesn't clip off narrow screens */
+  .toast-enter-from,
+  .toast-leave-to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
 }
 </style>

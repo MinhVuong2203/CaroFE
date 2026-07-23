@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
   type: {
     type: String,
@@ -9,10 +7,6 @@ const props = defineProps({
   name: {
     type: String,
     default: '???',
-  },
-  status: {
-    type: String,
-    default: 'waiting',
   },
   isTurn: {
     type: Boolean,
@@ -23,21 +17,6 @@ const props = defineProps({
     default: false,
   },
 })
-
-const statusText = computed(() => {
-  switch (props.status) {
-    case 'online':
-      return 'Online'
-    case 'waiting':
-      return 'Đang chờ'
-    case 'offline':
-      return 'Offline'
-    default:
-      return 'Unknown'
-  }
-})
-
-const statusClass = computed(() => props.status)
 </script>
 
 <template>
@@ -70,23 +49,10 @@ const statusClass = computed(() => props.status)
 
     <!-- Name -->
     <div class="player-name">{{ props.name }}</div>
-
-    <!-- Status -->
-    <!-- <div class="player-status" :class="statusClass">
-      <i class="fa-solid fa-circle status-dot"></i>
-      {{ statusText }}
-    </div> -->
-
-    <!-- Turn label -->
-    <div v-if="isTurn" class="turn-label" :class="props.type">
-      <i class="fa-solid fa-bolt"></i>
-      Lượt của bạn
-    </div>
   </div>
 </template>
 
 <style scoped>
-
 .player-card {
   position: relative;
   background: linear-gradient(
@@ -103,6 +69,7 @@ const statusClass = computed(() => props.status)
   gap: 10px;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
+  height: 100%;
 }
 
 /* Subtle top shimmer line */
@@ -273,6 +240,7 @@ const statusClass = computed(() => props.status)
   font-weight: 700;
   letter-spacing: 0.02em;
   color: white;
+  white-space: nowrap;
 }
 
 .turn-label.X {
@@ -298,6 +266,67 @@ const statusClass = computed(() => props.status)
   to {
     opacity: 1;
     transform: scale(1.15);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablet: cards sit side by side, shrink padding a touch */
+@media (max-width: 1024px) {
+  .player-card {
+    padding: 22px 14px 16px;
+    border-radius: 18px;
+  }
+
+  .player-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+}
+
+/* Mobile: compact horizontal-friendly card */
+@media (max-width: 560px) {
+  .player-card {
+    padding: 16px 10px 12px;
+    border-radius: 16px;
+    gap: 6px;
+  }
+
+  .host-badge {
+    top: 8px;
+    right: 8px;
+    font-size: 9px;
+    padding: 2px 7px 2px 5px;
+  }
+
+  .piece-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    margin: 2px 0;
+  }
+
+  .player-name {
+    font-size: 13px;
+    max-width: 100px;
+  }
+
+  .turn-label {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .turn-label-text {
+    display: none;
   }
 }
 </style>

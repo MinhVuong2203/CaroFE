@@ -1,56 +1,55 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref } from 'vue'
+import AppButton from './AppButton.vue'
 
-const isDark = ref(false);
+const isDark = ref(false)
 
 function applyTheme() {
-    document.documentElement.classList.toggle("dark", isDark.value);
-    localStorage.setItem("theme", isDark.value ? "dark" : "light");
+  document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
 }
 
 function toggleTheme() {
-    isDark.value = !isDark.value;
-    applyTheme();
+  isDark.value = !isDark.value
+  applyTheme()
 }
 
 onMounted(() => {
-    isDark.value = localStorage.getItem("theme") === "dark";
-    applyTheme();
-});
+  isDark.value = localStorage.getItem('theme') === 'dark'
+  applyTheme()
+})
 </script>
 
 <template>
-    <button class="theme-toggle" @click="toggleTheme">
-        {{ isDark ? "☀️" : "🌙" }}
-    </button>
+  <AppButton class="theme-toggle" @click="toggleTheme">
+    <i v-if="isDark" class="fa-solid fa-moon fa-swing" style="color: rgb(255, 255, 255)"></i>
+
+    <i v-else class="fa-solid fa-sun fa-spin-snap-8" style="color: rgb(255, 212, 59)"></i>
+  </AppButton>
 </template>
 
 <style scoped>
-.theme-toggle{
+.theme-toggle {
+  width: 42px;
 
-    width:42px;
+  height: 42px;
 
-    height:42px;
+  border: none;
 
-    border:none;
+  border-radius: 50%;
 
-    border-radius:50%;
+  cursor: pointer;
 
-    cursor:pointer;
+  font-size: 20px;
 
-    font-size:20px;
+  background: var(--surface-hover);
 
-    background:var(--surface-hover);
+  color: var(--text);
 
-    color:var(--text);
-
-    transition:.25s;
-
+  transition: 0.25s;
 }
 
-.theme-toggle:hover{
-
-    transform:rotate(20deg) scale(1.08);
-
+.theme-toggle:hover {
+  transform: rotate(20deg) scale(1.08);
 }
 </style>
