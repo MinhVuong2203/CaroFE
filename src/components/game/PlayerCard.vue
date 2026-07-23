@@ -16,6 +16,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  selected: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
 
@@ -23,6 +27,7 @@ const props = defineProps({
   <div
     class="player-card"
     :class="{
+      selected,
       active: isTurn,
       activeX: isTurn && props.type === 'X',
       activeO: isTurn && props.type === 'O',
@@ -269,6 +274,15 @@ const props = defineProps({
   }
 }
 
+.player-card.selected {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 20px var(--primary);
+}
+
+.player-card.selected {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 20px var(--primary);
+}
 /* =========================================================
    RESPONSIVE
    ========================================================= */

@@ -95,32 +95,61 @@ input {
   animation: fade 0.35s;
 }
 
-
 /* Thông báo SweetAlert */
 .swal-popup {
-  background: var(--modal-bg) !important;
-  color: var(--modal-text) !important;
-  border: 1px solid var(--modal-border);
-  border-radius: 20px;
-  box-shadow: var(--modal-shadow);
-}
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
 
-.swal-title {
-  color: var(--modal-text) !important;
-}
+  border: 1px solid var(--border);
 
-.swal-html {
-  color: var(--text-secondary) !important;
+  box-shadow: var(--shadow);
 }
 
 .swal-confirm {
-  background: var(--primary) !important;
-  border-radius: 10px !important;
-  font-weight: 600;
+  background: #ef4444;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 10px 22px;
+
+  font-weight: 700;
+
+  transition: 0.2s;
 }
 
 .swal-confirm:hover {
-  background: var(--primary-hover) !important;
+  transform: translateY(-2px);
+
+  background: #dc2626;
+}
+
+.swal-cancel {
+  margin-left: 10px;
+
+  background: var(--surface-hover);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  padding: 10px 22px;
+
+  font-weight: 700;
+
+  transition: 0.2s;
+}
+
+.swal-cancel:hover {
+  transform: translateY(-2px);
+
+  border-color: var(--primary);
 }
 
 @keyframes fade {

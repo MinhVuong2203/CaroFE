@@ -13,6 +13,7 @@ export const useRoomStore = defineStore('room', () => {
     hostConnectionId: null,
     winningCells: [],
     lastMove: null,
+    viewers: [],
   })
 
   // Toán tử spread (...) được sử dụng để sao chép tất cả các thuộc tính của đối tượng room.value và sau đó ghi đè chúng bằng các thuộc tính mới từ đối tượng data. Điều này giúp cập nhật trạng thái của room mà không làm mất đi các thuộc tính khác.
@@ -36,6 +37,7 @@ export const useRoomStore = defineStore('room', () => {
       hostConnectionId: null,
       winningCells: [],
       lastMove: null,
+      viewers: [],
     }
   }
 

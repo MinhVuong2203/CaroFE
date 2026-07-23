@@ -1,15 +1,16 @@
 <script setup>
 import { useRoomStore } from '@/stores/roomStore'
 import AppButton from '../common/AppButton.vue'
+import { useNotificationStore } from '@/stores/notificationStore.js'
 
 const roomStore = useRoomStore() // hàm này được gọi để lấy dữ liệu từ store roomStore trong roomStore.js đã export ra
-
+const notification = useNotificationStore()
 const copyRoomCode = async () => {
   try {
     await navigator.clipboard.writeText(roomStore.room.roomCode)
-    alert('Đã sao chép mã phòng.')
+    notification.success('Đã sao chép mã phòng.')
   } catch {
-    alert('Không thể sao chép.')
+    notification.error('Không thể sao chép mã phòng.')
   }
 }
 

@@ -7,6 +7,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppButton from '../common/AppButton.vue'
 import ThemeToggle from '../common/ThemeToggle.vue'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 const notification = useNotificationStore()
@@ -24,15 +25,42 @@ const copyRoomCode = async () => {
 }
 
 const leaveRoom = async () => {
-  if (confirm('Bạn có muốn rời phòng không?')) {
-    try {
-      await connection.invoke('LeaveRoom', roomStore.room.roomCode) // Xóa trong RAM BE
-      localStorage.removeItem('caro-session') // Xóa session khi rời phòng
-      roomStore.clearRoom() // Xóa dữ liệu phòng trong store
-      router.push('/')
-    } catch (err) {
-      console.error('Error leaving room:', err)
-    }
+  const result = await Swal.fire({
+    title: 'Rời phòng?',
+    html: `
+      <div style="font-size:15px;color:var(--text-secondary)">
+        <i class="fa-solid fa-right-from-bracket"
+           style="font-size:48px;color:#ef4444;margin-bottom:16px;"></i>
+
+        <p>Bạn có chắc muốn rời phòng?</p>
+
+        <small>Tiến trình hiện tại sẽ bị mất.</small>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: '<i class="fa-solid fa-door-open"></i> Rời phòng',
+    cancelButtonText: '<i class="fa-solid fa-xmark"></i> Ở lại',
+
+    buttonsStyling: false,
+
+    customClass: {
+      popup: 'swal-popup',
+      confirmButton: 'swal-confirm',
+      cancelButton: 'swal-cancel',
+    },
+  })
+
+  if (!result.isConfirmed) return
+
+  try {
+    await connection.invoke('LeaveRoom', roomStore.room.roomCode)
+
+    localStorage.removeItem('caro-session')
+    roomStore.clearRoom()
+
+    router.push('/')
+  } catch (err) {
+    console.error(err)
   }
 }
 
@@ -74,7 +102,6 @@ const buttonClass = computed(() => {
       <span class="btn-full">← Thoát</span>
       <span class="btn-compact"><i class="fa-solid fa-arrow-left"></i></span>
     </AppButton>
-    <i class="fa-solid fa-x fa-jello"></i>
     <div class="room-section">
       <span class="room-title"> Phòng </span>
 

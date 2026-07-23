@@ -41,6 +41,8 @@ connection.on('RoomUpdated', (room) => {
   const wasPlaying = roomStore.room.isPlaying
   roomStore.setRoom(room)
 
+  console.log('Room updated:', room)
+
   if (wasPlaying && !room.isPlaying && room.winningCells.length > 0) {
     setTimeout(() => {
       const winner = room.currentTurn === 'X' ? room.player1?.name : room.player2?.name
