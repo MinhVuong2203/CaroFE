@@ -1,5 +1,6 @@
 <script setup>
 import { useNotificationStore } from '@/stores/notificationStore'
+import AppButton from './AppButton.vue'
 
 const notificationStore = useNotificationStore()
 </script>
@@ -27,9 +28,9 @@ const notificationStore = useNotificationStore()
 
       <span class="message">{{ notification.message }}</span>
 
-      <button class="close-btn" @click="notificationStore.hide(notification.id)">
+      <AppButton class="close-btn" @click="notificationStore.hide(notification.id)">
         <i class="fa-solid fa-x fa-jello"></i>
-      </button>
+      </AppButton>
     </div>
   </TransitionGroup>
 </template>

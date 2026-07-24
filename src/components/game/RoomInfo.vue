@@ -35,12 +35,12 @@ const copyRoomCode = async () => {
 
     <div class="info-list">
       <div class="info-item">
-        <span>👥 Người chơi</span>
+        <span><i class="fa-solid fa-people-pulling"></i> Người chơi</span>
         <strong>{{ roomStore.getQuantityPlayer }}/2</strong>
       </div>
 
       <div class="info-item">
-        <span>🧩 Bàn cờ</span>
+        <span><i class="fa-solid fa-chess-board board-icon"></i> Bàn cờ</span>
         <strong>{{ roomStore.room.boardSize }}x{{ roomStore.room.boardSize }}</strong>
       </div>
     </div>

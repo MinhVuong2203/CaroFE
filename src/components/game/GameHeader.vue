@@ -3,17 +3,18 @@ import { connection } from '@/services/signalr'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useRoomStore } from '@/stores/roomStore'
 import { getSignalRError } from '@/utils/signalr'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppButton from '../common/AppButton.vue'
 import ThemeToggle from '../common/ThemeToggle.vue'
 import Swal from 'sweetalert2'
+import SettingsPanel from './SettingsPanel.vue'
 
 const router = useRouter()
 const notification = useNotificationStore()
-
 const roomStore = useRoomStore()
-// const playerCount = 1
+
+const showSettings = ref(false)
 
 const copyRoomCode = async () => {
   try {
@@ -40,9 +41,7 @@ const leaveRoom = async () => {
     showCancelButton: true,
     confirmButtonText: '<i class="fa-solid fa-door-open"></i> Rời phòng',
     cancelButtonText: '<i class="fa-solid fa-xmark"></i> Ở lại',
-
     buttonsStyling: false,
-
     customClass: {
       popup: 'swal-popup',
       confirmButton: 'swal-confirm',
@@ -64,47 +63,110 @@ const leaveRoom = async () => {
   }
 }
 
-const toggleGame = async () => {
+// =====================
+// Role
+// =====================
+
+const isHost = computed(() => {
+  return roomStore.room.hostConnectionId === connection.connectionId
+})
+
+const isPlayer1 = computed(() => {
+  return roomStore.room.player1?.connectionId === connection.connectionId
+})
+
+const isPlayer2 = computed(() => {
+  return roomStore.room.player2?.connectionId === connection.connectionId
+})
+
+const isPlayer = computed(() => {
+  return isPlayer1.value || isPlayer2.value
+})
+
+const isViewer = computed(() => {
+  return !isPlayer.value
+})
+
+// =====================
+// Button
+// =====================
+
+const buttonDisabled = computed(() => {
+  return isViewer.value && !isHost.value
+})
+
+const toggleReady = async () => {
   try {
-    if (roomStore.room.winningCells.length > 0) {
-      await connection.invoke('RestartGame', roomStore.room.roomCode)
-    } else if (roomStore.room.isPlaying) {
-      await connection.invoke('StopGame', roomStore.room.roomCode)
-    } else {
-      await connection.invoke('StartGame', roomStore.room.roomCode)
-    }
+    await connection.invoke('ToggleReady', roomStore.room.roomCode)
   } catch (err) {
     notification.error(getSignalRError(err), 3000)
   }
 }
 
 const buttonText = computed(() => {
-  if (roomStore.room.winningCells.length > 0) return 'Đánh lại'
-  return roomStore.room.isPlaying ? 'Dừng lại' : 'Bắt đầu'
+  if (roomStore.room.isPlaying) {
+    return 'Dừng'
+  }
+
+  if (isViewer.value && isHost.value) {
+    return roomStore.room.isPlaying ? 'Dừng' : 'Điều khiển'
+  }
+
+  const ready = isPlayer1.value ? roomStore.room.player1Ready : roomStore.room.player2Ready
+
+  return ready ? 'Hủy sẵn sàng' : 'Sẵn sàng'
 })
 
 const buttonIcon = computed(() => {
-  if (roomStore.room.winningCells.length > 0) return 'fa-solid fa-rotate-right'
+  if (roomStore.room.isPlaying) {
+    return 'fa-solid fa-stop'
+  }
 
-  return roomStore.room.isPlaying ? 'fa-solid fa-stop' : 'fa-solid fa-play'
+  if (!isPlayer.value) {
+    return 'fa-solid fa-check'
+  }
+
+  const ready = isPlayer1.value ? roomStore.room.player1Ready : roomStore.room.player2Ready
+
+  return ready ? 'fa-solid fa-xmark' : 'fa-solid fa-check'
 })
 
 const buttonClass = computed(() => {
-  if (roomStore.room.winningCells.length > 0) return 'warning'
+  if (roomStore.room.isPlaying) {
+    return 'danger'
+  }
 
-  return roomStore.room.isPlaying ? 'danger' : 'success'
+  if (!isPlayer.value) {
+    return 'success'
+  }
+
+  const ready = isPlayer1.value ? roomStore.room.player1Ready : roomStore.room.player2Ready
+
+  return ready ? 'warning' : 'success'
 })
+
+// yêu cầu hòa
+const requestDraw = async () => {
+  try {
+    await connection.invoke('RequestDraw', roomStore.room.roomCode)
+
+    notification.success('Đã gửi yêu cầu hòa.', 3000)
+  } catch (err) {
+    notification.error(getSignalRError(err), 3000)
+  }
+}
 </script>
 
 <template>
   <header class="game-header">
     <AppButton class="header-btn danger" @click="leaveRoom">
       <span class="btn-full">← Thoát</span>
-      <span class="btn-compact"><i class="fa-solid fa-arrow-left"></i></span>
+      <span class="btn-compact">
+        <i class="fa-solid fa-arrow-left"></i>
+      </span>
     </AppButton>
-    <div class="room-section">
-      <span class="room-title"> Phòng </span>
 
+    <div class="room-section">
       <div class="room-code">
         {{ roomStore.room.roomCode }}
 
@@ -113,35 +175,49 @@ const buttonClass = computed(() => {
         </AppButton>
       </div>
 
-      <span class="player-count"> 👥 {{ roomStore.getQuantityPlayer }}/2 </span>
+      <span class="player-count">
+        <i class="fa-solid fa-people-pulling"></i> {{ roomStore.getQuantityPlayer }}/2
+      </span>
     </div>
 
     <div class="header-actions">
       <AppButton
         class="header-btn"
         :class="buttonClass"
-        :disabled="roomStore.room.hostConnectionId !== connection.connectionId"
-        :title="
-          roomStore.room.hostConnectionId !== connection.connectionId
-            ? 'Chỉ chủ phòng mới có thể chạm vào'
-            : ''
-        "
-        @click="toggleGame"
+        :disabled="buttonDisabled"
+        :title="buttonDisabled ? 'Viewer không thể thao tác' : ''"
+        @click="toggleReady"
       >
         <i :class="buttonIcon"></i>
-        <span class="btn-full">{{ buttonText }}</span>
+
+        <span class="btn-full">
+          {{ buttonText }}
+        </span>
+      </AppButton>
+
+      <AppButton
+        v-if="isPlayer && roomStore.room.isPlaying"
+        class="header-btn warning"
+        @click="requestDraw"
+      >
+        <i class="fa-solid fa-handshake"></i>
+        <span class="btn-full">Cầu hòa</span>
       </AppButton>
 
       <ThemeToggle />
-      <AppButton class="theme-toggle"><i class="fa-solid fa-wrench"></i></AppButton>
+
+      <AppButton class="theme-toggle" @click="showSettings = true">
+        <i class="fa-solid fa-wrench"></i>
+      </AppButton>
+
+      <SettingsPanel v-if="showSettings" @close="showSettings = false" />
     </div>
   </header>
 </template>
 
 <style scoped>
 .game-header {
-  height: 72px;
-  padding: 0 24px;
+  padding: 6px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -160,8 +236,9 @@ const buttonClass = computed(() => {
 }
 
 .room-title {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-secondary);
+  padding-top: 5px;
 }
 
 .room-code {

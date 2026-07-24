@@ -27,7 +27,9 @@ const roomStore = useRoomStore()
         }"
         @click="emit('select', viewer.connectionId)"
       >
-        <i class="fa-solid fa-user"></i>
+        <div class="viewer-avatar" :style="{ color: viewer.avatarColor }">
+          <i :class="[viewer.avatarIcon || 'fa-solid fa-user', viewer.avatarAnimation]"></i>
+        </div>
 
         <span>{{ viewer.name }}</span>
       </div>
@@ -69,22 +71,23 @@ const roomStore = useRoomStore()
 
 .viewer-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
 
-  padding: 10px 16px;
+  gap: 10px;
+
+  padding: 14px;
 
   border-radius: 14px;
 
   background: var(--surface);
-
   border: 1px solid var(--border);
 
   cursor: pointer;
+  user-select: none;
 
   transition: all 0.25s ease;
-
-  user-select: none;
 }
 
 .viewer-card:hover {
@@ -111,5 +114,32 @@ const roomStore = useRoomStore()
 
 .viewer-card.selected span {
   font-weight: 700;
+}
+
+.viewer-avatar {
+  width: 66px;
+  height: 66px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+
+  font-size: 18px;
+
+  flex-shrink: 0;
+
+  transition: 0.25s;
+}
+
+.viewer-avatar i {
+  font-size: 24px;
+}
+.viewer-card:hover .viewer-avatar {
+  transform: scale(1.12);
 }
 </style>

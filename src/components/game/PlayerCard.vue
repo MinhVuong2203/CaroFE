@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   type: {
     type: String,
@@ -20,6 +22,51 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  winCount: {
+    type: Number,
+    default: 0,
+  },
+  drawCount: {
+    type: Number,
+    default: 0,
+  },
+  loseCount: {
+    type: Number,
+    default: 0,
+  },
+  avatarIcon: {
+    type: String,
+    default: 'fa-solid fa-user',
+  },
+
+  avatarColor: {
+    type: String,
+    default: '#131F39',
+  },
+
+  avatarAnimation: {
+    type: String,
+    default: '',
+  },
+})
+
+const totalGame = computed(() => {
+  return props.winCount + props.drawCount + props.loseCount
+})
+
+const winPercent = computed(() => {
+  if (totalGame.value === 0) return 0
+  return (props.winCount / totalGame.value) * 100
+})
+
+const drawPercent = computed(() => {
+  if (totalGame.value === 0) return 0
+  return (props.drawCount / totalGame.value) * 100
+})
+
+const losePercent = computed(() => {
+  if (totalGame.value === 0) return 0
+  return (props.loseCount / totalGame.value) * 100
 })
 </script>
 
@@ -47,13 +94,37 @@ const props = defineProps({
 
     <!-- Avatar -->
     <div class="player-avatar">
-      <i class="fa-solid fa-user"></i>
+      <i
+        :class="[props.avatarIcon, props.avatarAnimation]"
+        :style="{ color: props.avatarColor }"
+      ></i>
+
       <!-- Turn glow ring -->
       <div v-if="isTurn" class="turn-ring" :class="props.type"></div>
     </div>
 
     <!-- Name -->
     <div class="player-name">{{ props.name }}</div>
+
+    <div class="player-stat">
+      <div class="stat-header">
+        <span class="win"> <i class="fa-solid fa-crown fa-fade"></i> {{ props.winCount }} </span>
+
+        <span class="draw">
+          <i class="fa-solid fa-handshake fa-fade"></i> {{ props.drawCount }}
+        </span>
+
+        <span class="lose"> <i class="fa-solid fa-x fa-fade"></i> {{ props.loseCount }} </span>
+      </div>
+
+      <div class="stat-bar">
+        <div class="part win" :style="{ width: winPercent + '%' }" />
+
+        <div class="part draw" :style="{ width: drawPercent + '%' }" />
+
+        <div class="part lose" :style="{ width: losePercent + '%' }" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -283,6 +354,64 @@ const props = defineProps({
   border: 2px solid var(--primary);
   box-shadow: 0 0 20px var(--primary);
 }
+
+/* ============ Thống kê ============ */
+.player-stat {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 6px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stat-bar {
+  display: flex;
+
+  width: 100%;
+  height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.part {
+  transition: width 0.4s ease;
+}
+
+.part.win {
+  background: linear-gradient(90deg, #22c55e, #84cc16);
+}
+
+.part.draw {
+  background: linear-gradient(90deg, #facc15, #eab308);
+}
+
+.part.lose {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.win {
+  color: #22c55e;
+}
+
+.draw {
+  color: #eab308;
+}
+
+.lose {
+  color: #ef4444;
+}
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */

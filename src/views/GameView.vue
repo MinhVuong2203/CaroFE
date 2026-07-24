@@ -7,7 +7,7 @@ import ChatBox from '@/components/game/ChatBox.vue'
 import EmojiBar from '@/components/game/EmojiBar.vue'
 import { useRoomStore } from '@/stores/roomStore'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { playBGM, stopBGM } from '@/services/audio'
+import { playBGM, playButtonSound, stopBGM } from '@/services/audio'
 import ViewerList from '@/components/game/ViewerList.vue'
 import { connection } from '@/services/signalr'
 import { useNotificationStore } from '@/stores/notificationStore'
@@ -25,6 +25,7 @@ onUnmounted(() => {
 })
 
 const selectPlayer = async (connectionId) => {
+  playButtonSound()
   // Chỉ host mới được swap
   if (roomStore.room.hostConnectionId !== connection.connectionId) return
 
@@ -69,6 +70,12 @@ const selectPlayer = async (connectionId) => {
           :isTurn="roomStore.room.isPlaying && roomStore.room.currentTurn === 'X'"
           @click="selectPlayer(roomStore.room.player1?.connectionId)"
           :selected="selectedConnectionId === roomStore.room.player1?.connectionId"
+          :winCount="roomStore.room.player1?.winCount"
+          :drawCount="roomStore.room.player1?.drawCount"
+          :loseCount="roomStore.room.player1?.loseCount"
+          :avatar-icon="roomStore.room.player1?.avatarIcon"
+          :avatar-color="roomStore.room.player1?.avatarColor"
+          :avatar-animation="roomStore.room.player1?.avatarAnimation"
         />
       </div>
 
@@ -84,6 +91,12 @@ const selectPlayer = async (connectionId) => {
           :isTurn="roomStore.room.isPlaying && roomStore.room.currentTurn === 'O'"
           @click="selectPlayer(roomStore.room.player2?.connectionId)"
           :selected="selectedConnectionId === roomStore.room.player2?.connectionId"
+          :winCount="roomStore.room.player2?.winCount"
+          :drawCount="roomStore.room.player2?.drawCount"
+          :loseCount="roomStore.room.player2?.loseCount"
+          :avatar-icon="roomStore.room.player2?.avatarIcon"
+          :avatar-color="roomStore.room.player2?.avatarColor"
+          :avatar-animation="roomStore.room.player2?.avatarAnimation"
         />
       </div>
 

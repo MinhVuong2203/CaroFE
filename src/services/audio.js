@@ -3,32 +3,121 @@ import aaaFile from '@/assets/sounds/aaa.wav'
 import hooFile from '@/assets/sounds/hoo.wav'
 import humFile from '@/assets/sounds/hum.wav'
 import oooFile from '@/assets/sounds/ooo.wav'
-import win from '@/assets/sounds/win.wav'
-import button from '@/assets/sounds/button.wav'
+import winFile from '@/assets/sounds/win.wav'
+import buttonFile from '@/assets/sounds/button.wav'
+
+const STORAGE_KEY = 'caro-audio-setting'
+
+let unlocked = false
+
+export async function unlockAudio() {
+  if (unlocked) return
+
+  try {
+    await backgroundAudio.play()
+    backgroundAudio.pause()
+    backgroundAudio.currentTime = 0
+
+    unlocked = true
+
+    playBGM() // Phát luôn nhạc nền sau khi mở khóa
+  } catch (err) {
+    console.warn(err)
+  }
+}
+
+const defaultSetting = {
+  bgmVolume: 5,
+  placeVolume: 100,
+  winVolume: 100,
+  buttonVolume: 100,
+}
+
+const setting = loadSetting()
+
+function loadSetting() {
+  const json = localStorage.getItem(STORAGE_KEY)
+
+  if (!json) {
+    return { ...defaultSetting }
+  }
+
+  return {
+    ...defaultSetting,
+    ...JSON.parse(json),
+  }
+}
+
+function saveSetting() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(setting))
+}
 
 // ===== Khởi tạo Audio (chỉ tạo 1 lần) =====
 
-const backgroundAudio = new Audio(backgroundFile) // Background
+const backgroundAudio = new Audio(backgroundFile)
 
-const placeSounds = [new Audio(aaaFile), new Audio(hooFile), new Audio(humFile), new Audio(oooFile)] // Place sound
+const placeSounds = [new Audio(aaaFile), new Audio(hooFile), new Audio(humFile), new Audio(oooFile)]
 
-const winAudio = new Audio(win) //  Win sound
+const winAudio = new Audio(winFile)
 
-const buttonSound = new Audio(button) // Button sound
+const buttonAudio = new Audio(buttonFile)
 
-// ===== Cấu hình =====
+// ===== Áp dụng Volume =====
+
 backgroundAudio.loop = true
-backgroundAudio.volume = 0.15
 
-placeSounds.forEach((audio) => {
-  audio.volume = 0.8
-})
+applyVolumes()
 
-winAudio.volume = 0.8
+function applyVolumes() {
+  backgroundAudio.volume = setting.bgmVolume / 100
 
-buttonSound.volume = 0.8
+  placeSounds.forEach((audio) => {
+    audio.volume = setting.placeVolume / 100
+  })
+
+  winAudio.volume = setting.winVolume / 100
+
+  buttonAudio.volume = setting.buttonVolume / 100
+}
+
+// ===== Getter =====
+
+export function getAudioSetting() {
+  return { ...setting }
+}
+
+// ===== Setter =====
+
+export function setBGMVolume(volume) {
+  setting.bgmVolume = Number(volume)
+  backgroundAudio.volume = setting.bgmVolume / 100
+  saveSetting()
+}
+
+export function setPlaceVolume(volume) {
+  setting.placeVolume = Number(volume)
+
+  placeSounds.forEach((audio) => {
+    audio.volume = setting.placeVolume / 100
+  })
+
+  saveSetting()
+}
+
+export function setWinVolume(volume) {
+  setting.winVolume = Number(volume)
+  winAudio.volume = setting.winVolume / 100
+  saveSetting()
+}
+
+export function setButtonVolume(volume) {
+  setting.buttonVolume = Number(volume)
+  buttonAudio.volume = setting.buttonVolume / 100
+  saveSetting()
+}
 
 // ===== Hàm dùng chung =====
+
 function play(audio) {
   audio.currentTime = 0
   audio.play().catch((err) => {
@@ -37,8 +126,9 @@ function play(audio) {
 }
 
 // ===== Background =====
+
 export function playBGM() {
-  backgroundAudio.play().catch(() => {})
+  play(backgroundAudio)
 }
 
 export function pauseBGM() {
@@ -51,22 +141,20 @@ export function stopBGM() {
 }
 
 // ===== Place Sound =====
+
 export function playPlaceSound() {
   const randomIndex = Math.floor(Math.random() * placeSounds.length)
-  const audio = placeSounds[randomIndex]
-
-  audio.currentTime = 0
-  audio.play().catch(() => {})
+  play(placeSounds[randomIndex])
 }
 
-// ==== Win Sound =====
+// ===== Win Sound =====
+
 export function playWinSound() {
-  winAudio.currentTime = 0
-  winAudio.play().catch(() => {})
+  play(winAudio)
 }
 
-// ==== Button Sound =====
+// ===== Button Sound =====
+
 export function playButtonSound() {
-  buttonSound.currentTime = 0
-  buttonSound.play().catch(() => {})
+  play(buttonAudio)
 }
